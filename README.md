@@ -16,6 +16,30 @@ This package standardizes the logical frame protocol for UI and client-side code
 npm install muninn-frames-ts
 ```
 
+## Library Use
+
+`muninn-frames-ts` is packaged as a small ESM library with type declarations:
+
+- runtime entry: `dist/index.js`
+- types entry: `dist/index.d.ts`
+- package export: `"muninn-frames-ts"`
+
+Published builds include only the library artifacts under `dist/`; tests are not part of the shipped package.
+
+Typical client usage:
+
+```ts
+import {
+  decodeFrame,
+  encodeFrame,
+  isTerminalStatus,
+  type Frame,
+  type Status
+} from "muninn-frames-ts";
+```
+
+If you are building a higher-level Muninn client or gateway, this package is the shared frame/protocol layer. Routing and in-memory execution belong in `muninn-kernel-ts`, not here.
+
 ## Public API
 
 ```ts
