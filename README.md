@@ -27,6 +27,7 @@ export type Status =
   | "error"
   | "cancel";
 
+export type JsonObject = { [key: string]: JsonValue };
 export interface Frame { ... }
 
 export function isTerminalStatus(status: Status): boolean;
@@ -49,9 +50,11 @@ export interface Frame {
   call: string;
   status: Status;
   trace?: JsonValue;
-  data: JsonValue;
+  data: JsonObject;
 }
 ```
+
+`data` is always a JSON object. Scalar values, top-level arrays, and `null` are not valid frame payloads.
 
 ## Status Lifecycle
 

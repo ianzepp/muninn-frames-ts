@@ -89,3 +89,31 @@ test("encode rejects missing data", () => {
     FrameValidationError
   );
 });
+
+test("encode rejects scalar data payloads", () => {
+  assert.throws(
+    () =>
+      encodeFrame({
+        ...sampleFrame(),
+        data: 24 as unknown as Frame["data"]
+      }),
+    FrameValidationError
+  );
+});
+
+test("decode rejects array data payloads", () => {
+  assert.throws(
+    () =>
+      decodeFrame(
+        JSON.stringify({
+          id: "id-1",
+          created_ms: 1,
+          expires_in: 0,
+          call: "board:list",
+          status: "request",
+          data: [1, 2, 3]
+        })
+      ),
+    FrameValidationError
+  );
+});

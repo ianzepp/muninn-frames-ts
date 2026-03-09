@@ -1,5 +1,6 @@
 export type JsonPrimitive = boolean | number | string | null;
 export type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
+export type JsonObject = { [key: string]: JsonValue };
 
 export const STATUSES = [
   "request",
@@ -21,7 +22,7 @@ export interface Frame {
   call: string;
   status: Status;
   trace?: JsonValue;
-  data: JsonValue;
+  data: JsonObject;
 }
 
 export class FrameValidationError extends Error {
@@ -55,6 +56,9 @@ export function validateFrame(frame: Frame): void {
   if (frame.data === undefined) {
     throw new FrameValidationError("data", "must not be undefined");
   }
+  if (typeof frame.data !== "object" || frame.data === null || Array.isArray(frame.data)) {
+    throw new FrameValidationError("data", "must be a JSON object");
+  }
 }
 
 export function encodeFrame(frame: Frame): string {
@@ -70,7 +74,7 @@ export function decodeFrame(json: string): Frame {
     expires_in: parsed.expires_in ?? 0,
     call: parsed.call ?? "",
     status: parsed.status as Status,
-    data: parsed.data ?? {}
+    data: parsed.data === undefined ? {} : (parsed.data as Frame["data"])
   };
   if (parsed.parent_id !== undefined) {
     frame.parent_id = parsed.parent_id;
@@ -84,4 +88,8 @@ export function decodeFrame(json: string): Frame {
 
   validateFrame(frame);
   return frame;
+}
+
+function isJsonObject(value: unknown): value is JsonObject {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
